@@ -484,7 +484,7 @@ void ADUVC::getDeviceImageInformation(){
     uint32_t exposure;
     uint16_t gamma, backlightCompensation, contrast, gain,  saturation, sharpness;
     int16_t brightness, hue;
-    uint8_t powerLineFrequency, panSpeed, tiltSpeed;
+    uint8_t powerLineFrequency, panSpeed, tiltSpeed, ae_mode, ae_priority;
     int8_t pan, tilt;
 
     asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s::%s Populating camera function PVs.\n", driverName, functionName);
@@ -492,6 +492,8 @@ void ADUVC::getDeviceImageInformation(){
     //get values from UVC camera
     uvc_get_exposure_abs(pdeviceHandle, &exposure, UVC_GET_CUR);
     uvc_get_gamma(pdeviceHandle, &gamma, UVC_GET_CUR);
+    uvc_get_ae_mode(pdeviceHandle, &ae_mode, UVC_GET_CUR);
+    uvc_get_ae_priority(pdeviceHandle, &ae_priority, UVC_GET_CUR);
     uvc_get_backlight_compensation(pdeviceHandle, &backlightCompensation, UVC_GET_CUR);
     uvc_get_brightness(pdeviceHandle, &brightness, UVC_GET_CUR);
     uvc_get_contrast(pdeviceHandle, &contrast, UVC_GET_CUR);
@@ -510,6 +512,8 @@ void ADUVC::getDeviceImageInformation(){
     //put values into appropriate PVs
     setDoubleParam(ADAcquireTime, (double) exposure);
     setIntegerParam(ADUVC_Gamma, (int) gamma);
+    setIntegerParam(ADUVC_AutoExposureMode, (int) ae_mode);
+    setIntegerParam(ADUVC_AutoExposurePriority, (int) ae_priority);
     setIntegerParam(ADUVC_BacklightCompensation, (int) backlightCompensation);
     setIntegerParam(ADUVC_Brightness, (int) brightness);
     setIntegerParam(ADUVC_Contrast, (int) contrast);
@@ -1028,6 +1032,67 @@ asynStatus ADUVC::setExposure(int exposureTime){
 
 
 /**
+ * Function that sets camera's auto-exposure mode. 
+ * 
+ * @params[in]: mode
+
+    UVC_AUTO_EXPOSURE_MODE_MANUAL (1) - manual exposure time, manual iris
+    UVC_AUTO_EXPOSURE_MODE_AUTO (2) - auto exposure time, auto iris
+    UVC_AUTO_EXPOSURE_MODE_SHUTTER_PRIORITY (4) - manual exposure time, auto iris
+    UVC_AUTO_EXPOSURE_MODE_APERTURE_PRIORITY (8) - auto exposure time, manual iris
+
+    Most cameras provide manual mode and aperture priority mode. 
+    
+ * @return: status
+ */
+asynStatus ADUVC::setAutoExposureMode(int mode){
+
+    if(this->pdevice == NULL) return asynError;
+    
+    const char* functionName = "setAutoExposureMode";
+    asynStatus status = asynSuccess;
+    updateStatus("Set Auto Exposure Mode");
+    
+    deviceStatus = uvc_set_ae_mode(pdeviceHandle, (uint8_t) mode);
+    
+    if(deviceStatus < 0){
+        reportUVCError(deviceStatus, functionName);
+        status = asynError;
+    
+    }
+    return status;
+}
+
+
+/**
+ * Function to choose whether the camera may vary the frame rate for exposure control reasons. 
+ * 
+ * @params[in]: priority
+
+    A priority value of zero means the camera may not vary its frame rate. A value of 1 means the frame rate is variable. This setting has no effect outside of the auto and shutter_priority auto-exposure modes.
+    
+ * @return: status
+ */
+asynStatus ADUVC::setAutoExposurePriority(int priority){
+
+    if(this->pdevice == NULL) return asynError;
+    
+    const char* functionName = "setAutoExposurePriority";
+    asynStatus status = asynSuccess;
+    updateStatus("Set Auto Exposure Priority");
+    
+    deviceStatus = uvc_set_ae_priority(pdeviceHandle, (uint8_t) priority);
+    
+    if(deviceStatus < 0){
+        reportUVCError(deviceStatus, functionName);
+        status = asynError;
+    
+    }
+    return status;
+}
+
+
+/**
  * Function that sets Gamma value
  * 
  * @params[in]: gamma -> value for gamma
@@ -1404,6 +1469,8 @@ asynStatus ADUVC::writeInt32(asynUser* pasynUser, epicsInt32 value){
         if(acquiring == 1) acquireStop();
     }
     //setting different camera functions
+    else if(function == ADUVC_AutoExposureMode) setAutoExposureMode(value);
+    else if(function == ADUVC_AutoExposurePriority) setAutoExposurePriority(value);
     else if(function == ADUVC_Gamma) setGamma(value);
     else if(function == ADUVC_BacklightCompensation) setBacklightCompensation(value);
     else if(function == ADUVC_Brightness) setBrightness(value);
@@ -1581,6 +1648,8 @@ ADUVC::ADUVC(const char* portName, const char* serial, int productID,
     createParam(ADUVC_PowerLineString,              asynParamInt32,     &ADUVC_PowerLine);
     createParam(ADUVC_HueString,                    asynParamInt32,     &ADUVC_Hue);
     createParam(ADUVC_SaturationString,             asynParamInt32,     &ADUVC_Saturation);
+    createParam(ADUVC_AutoExposureModeString,       asynParamInt32,     &ADUVC_AutoExposureMode);
+    createParam(ADUVC_AutoExposurePriorityString,   asynParamInt32,     &ADUVC_AutoExposurePriority);
     createParam(ADUVC_GammaString,                  asynParamInt32,     &ADUVC_Gamma);
     createParam(ADUVC_BacklightCompensationString,  asynParamInt32,     &ADUVC_BacklightCompensation);
     createParam(ADUVC_SharpnessString,              asynParamInt32,     &ADUVC_Sharpness);

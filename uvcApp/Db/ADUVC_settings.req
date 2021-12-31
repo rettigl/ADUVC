@@ -3,6 +3,8 @@ $(P)$(R)UVCComplianceLevel
 $(P)$(R)UVCFramerate
 $(P)$(R)UVCImageFormat
 $(P)$(R)UVCGamma
+$(P)$(R)UVCAutoExposureMode
+$(P)$(R)UVCAutoExposurePriority
 $(P)$(R)UVCBacklightCompensation
 $(P)$(R)UVCBrightness
 $(P)$(R)UVCContrast

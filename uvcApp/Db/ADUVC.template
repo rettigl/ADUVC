@@ -212,6 +212,57 @@ record(ai, "$(P)$(R)UVCGamma_RBV"){
 }
 
 ##################################################
+# Stores the Auto Exposure mode
+##################################################
+record(mbbo, "$(P)$(R)UVCAutoExposureMode"){
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))UVC_AE_MODE")
+    field(ZRST, "Off")
+    field(ZRVL, "1")
+    field(ONST, "Full")
+    field(ONVL, "2")
+    field(TWST, "Shutter Prio")
+    field(TWVL, "4")
+    field(THST, "Aperture Prio")
+    field(THVL, "8")
+    info(autosaveFields, "VAL")
+}
+
+record(mbbi, "$(P)$(R)UVCAutoExposureMode_RBV"){
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))UVC_AE_MODE")
+    field(ZRST, "Off")
+    field(ZRVL, "1")
+    field(ONST, "Full")
+    field(ONVL, "2")
+    field(TWST, "Shutter Prio")
+    field(TWVL, "4")
+    field(THST, "Aperture Prio")
+    field(THVL, "8")
+    field(SCAN, "I/O Intr")
+}
+
+##################################################
+# Stores the Auto Exposure priority
+##################################################
+record(bo, "$(P)$(R)UVCAutoExposurePriority"){
+    field(PINI, "YES")
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))UVC_AE_PRIORITY")
+    field(ZVAL, "Off")
+    field(OVAL, "On")
+}
+
+record(bi, "$(P)$(R)UVCAutoExposurePriority_RBV"){
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))UVC_AE_PRIORITY")
+    field(ZVAL, "Off")
+    field(OVAL, "On")
+    field(SCAN, "I/O Intr")
+}
+
+##################################################
 # Stores the degree of Backlight compensation
 ##################################################
 record(ao, "$(P)$(R)UVCBacklightCompensation"){

@@ -48,6 +48,8 @@ extern "C" {
 #define ADUVC_ApplyFormatString                 "UVC_APPLY_FORMAT"          //asynInt32
 #define ADUVC_AutoAdjustString                  "UVC_AUTO_ADJUST"           //asynInt32
 #define ADUVC_GammaString                       "UVC_GAMMA"                 //asynInt32
+#define ADUVC_AutoExposureModeString            "UVC_AE_MODE"               //asynInt32
+#define ADUVC_AutoExposurePriorityString        "UVC_AE_PRIORITY"           //asynInt32
 #define ADUVC_BacklightCompensationString       "UVC_BACKLIGHT"             //asynInt32
 #define ADUVC_BrightnessString                  "UVC_BRIGHTNESS"            //asynInt32
 #define ADUVC_ContrastString                    "UVC_CONTRAST"              //asynInt32
@@ -132,6 +134,8 @@ class ADUVC : ADDriver{
         int ADUVC_ApplyFormat;
         int ADUVC_AutoAdjust;
         int ADUVC_Gamma;
+        int ADUVC_AutoExposureMode;
+        int ADUVC_AutoExposurePriority;
         int ADUVC_BacklightCompensation;
         int ADUVC_Brightness;
         int ADUVC_Contrast;
@@ -241,6 +245,8 @@ class ADUVC : ADDriver{
         // Functions that set image processing and acquisiton controls
         asynStatus setExposure(int exposureTime);
         asynStatus setGamma(int gamma);
+        asynStatus setAutoExposureMode(int mode);
+        asynStatus setAutoExposurePriority(int priority);
         asynStatus setBacklightCompensation(int backlightCompensation);
         asynStatus setBrightness(int brightness);
         asynStatus setContrast(int contrast);
